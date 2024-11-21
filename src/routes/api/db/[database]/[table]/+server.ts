@@ -6,7 +6,7 @@ import { dev } from "$app/environment";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ params, locals, url, fetch }) => {
+export const GET: RequestHandler = async ({ params, locals, url, fetch, platform }) => {
 	if (dev) {
 		const remote = new URL("https://d1-manager.pages.dev" + url.pathname + url.search);
 		const res = await fetch(remote);
@@ -17,6 +17,13 @@ export const GET: RequestHandler = async ({ params, locals, url, fetch }) => {
 	if (!db) {
 		throw error(404, "Database not found");
 	}
+
+	const durableObject = platform?.env.DO_NAMESPACE;
+	if (!durableObject) {
+		throw error(500, "Durable Object namespace not found");
+	}
+	console.log("durableObject: ", durableObject);
+	console.log("namespace: ", durableObject.idFromName("test"));
 
 	const { results } = await db.prepare(`SELECT COUNT(*) AS count FROM \`${params.table}\``).all<{
 		count: number;
