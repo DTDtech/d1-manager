@@ -6,12 +6,19 @@ import { dev } from "$app/environment";
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ url, params, locals, fetch }) => {
+export const GET: RequestHandler = async ({ url, params, locals, fetch, platform }) => {
 	if (dev) {
 		const remote = new URL("https://d1-manager.pages.dev" + url.pathname + url.search);
 		const res = await fetch(remote);
 		return json(await res.json());
 	}
+
+	const durableObject = platform?.env.DO_NAMESPACE;
+	if (!durableObject) {
+		throw error(500, "Durable Object namespace not found");
+	}
+	console.log("durableObject: ", durableObject);
+	console.log("namespace: ", durableObject.idFromName("test"));
 
 	const db = locals.db[params.database];
 	if (!db) {

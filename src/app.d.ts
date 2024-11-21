@@ -12,6 +12,7 @@ declare global {
 				SHOW_INTERNAL_TABLES?: string;
 				OPENAI_API_KEY?: string;
 				AI?: unknown;
+				DO_NAMESPACE?: DurableObjectNamespace;
 			} & Record<string, Fetcher | string>;
 		}
 	}
